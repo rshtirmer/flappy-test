@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #87CEEB;
+            font-family: Arial, sans-serif;
+        }
+        #gameCanvas {
+            background: #70C5CE;
+            border: 2px solid #000;
+        }
+        #startScreen, #gameOverScreen {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #startScreen {
+            display: block;
+        }
+        #gameOverScreen {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <div id="startScreen">
+        <h1>Flappy Bird</h1>
+        <button id="startButton">Start</button>
+    </div>
+    <div id="gameOverScreen">
+        <h1>Game Over</h1>
+        <p>Score: <span id="finalScore">0</span></p>
+        <button id="playAgainButton">Play Again</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const startButton = document.getElementById('startButton');
+        const playAgainButton = document.getElementById('playAgainButton');
+        const finalScore = document.getElementById('finalScore');
+
+        let birdY = 300;
+        let birdVelocity = 0;
+        let gravity = 0.5;
+        let obstacleX = 400;
+        let gap = 150;
+        let obstacleHeight = Math.random() * (canvas.height - gap);
+        let score = 0;
+        let gameRunning = false;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw bird
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(50, birdY, 30, 30);
+
+            if (gameRunning) {
+                // Update bird position
+                birdVelocity += gravity;
+                birdY += birdVelocity;
+
+                // Draw obstacle
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(obstacleX, 0, 50, obstacleHeight);
+                ctx.fillRect(obstacleX, obstacleHeight + gap, 50, canvas.height - obstacleHeight - gap);
+
+                // Move obstacle
+                obstacleX -= 2;
+                if (obstacleX < -50) {
+                    obstacleX = 400;
+                    obstacleHeight = Math.random() * (canvas.height - gap);
+                    score++;
+                }
+
+                // Collision detection
+                if (
+                    birdY < 0 || birdY + 30 > canvas.height || 
+                    (obstacleX < 80 && obstacleX + 50 > 50 && 
+                     (birdY < obstacleHeight || birdY + 30 > obstacleHeight + gap))
+                ) {
+                    endGame();
+                }
+            }
+
+            if (gameRunning) requestAnimationFrame(draw);
+        }
+
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            birdY = 300;
+            birdVelocity = 0;
+            obstacleX = 400;
+            score = 0;
+            gameRunning = true;
+            draw();
+        }
+
+        function endGame() {
+            gameRunning = false;
+            finalScore.textContent = score;
+            gameOverScreen.style.display = 'block';
+        }
+
+        startButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', startGame);
+
+        canvas.addEventListener('click', () => {
+            if (gameRunning) birdVelocity = -10; // Jump
+        });
+
+        // For mobile tap support
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameRunning) birdVelocity = -10;
+        });
+    </script>
+</body>
+</html>
