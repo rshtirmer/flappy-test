@@ -63,7 +63,7 @@ class OGPManager {
                 useCustomAuth: false
             });
 
-            this.ogp.init({ gameId: 'flappy-bird' })
+            this.ogp.init({ gameId: 'flappy-bird', playerId: 'player-123'})
                 .then(() => {
                     console.log('OGP SDK initialized successfully');
                     this.isInitialized = true;
