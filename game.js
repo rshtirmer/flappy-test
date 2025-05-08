@@ -100,7 +100,6 @@ class OGPManager {
         return this.ogp.savePoints(points)
             .then(response => {
                 console.log('Points saved:', response);
-                return response;
             })
             .catch(error => {
                 console.error('Failed to save points:', error);
@@ -114,11 +113,9 @@ class OGPManager {
         return this.ogp.getPoints()
             .then(response => {
                 console.log('Total OGP points:', response);
-                return response;
-                // gameState.ogpPoints = response.data.points;
-                // DOM.ogpPointsDisplay.textContent = gameState.ogpPoints;
-                // console.log('Total OGP points:', response, gameState.ogpPoints);
-                // return gameState.ogpPoints;
+                gameState.ogpPoints = response;
+                DOM.ogpPointsDisplay.textContent = gameState.ogpPoints;
+                return gameState.ogpPoints;
             })
             .catch(error => {
                 console.error('Failed to get total OGP points:', error);
