@@ -58,7 +58,7 @@ class OGPManager {
             console.log('Initializing OGP SDK...');
             this.ogp = new OpenGameSDK({
                 ui: {
-                    gameIcon: '/icon.png'
+                    gameIcon: 'https://dpid.github.io/flappy-test/icon.png'
                 },
                 useCustomAuth: false
             });
