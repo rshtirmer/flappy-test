@@ -94,13 +94,12 @@ class OGPManager {
         DOM.startScreen.style.display = 'block';
     }
 
-    savePoints(points) {
+    saveScore(points) {
         if (!this.isInitialized || points <= 0) return Promise.resolve();
 
         return this.ogp.savePoints(points)
             .then(response => {
                 console.log('Points saved:', response);
-                return this.updatePoints();
             })
             .catch(error => {
                 console.error('Failed to save points:', error);
@@ -108,7 +107,7 @@ class OGPManager {
             });
     }
 
-    updatePoints() {
+    updateTotalOgpPoints() {
         if (!this.isInitialized) return Promise.resolve();
 
         return this.ogp.getPoints()
@@ -119,7 +118,7 @@ class OGPManager {
                 return gameState.ogpPoints;
             })
             .catch(error => {
-                console.error('Failed to get points:', error);
+                console.error('Failed to get total OGP points:', error);
                 return Promise.reject(error);
             });
     }
@@ -258,8 +257,11 @@ class FlappyBirdGame {
         DOM.gameOverScreen.style.display = 'block';
 
         if (gameState.score > 0) {
-            this.ogpManager.savePoints(gameState.score)
-                .catch(error => console.error('Error in save points flow:', error));
+            this.ogpManager.saveScore(gameState.score)
+                .finally(() => {
+                    // Update points regardless of save result
+                    this.ogpManager.updateTotalOgpPoints();
+                });
         }
     }
 
