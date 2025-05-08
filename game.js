@@ -104,12 +104,6 @@ class OGPManager {
             })
             .catch(error => {
                 console.error('Failed to save points:', error);
-                if (this.ogp.showError) {
-                    this.ogp.showError({
-                        title: 'Error Saving Points',
-                        message: 'Unable to save your points. Please try again.'
-                    });
-                }
                 return Promise.reject(error);
             });
     }
@@ -121,7 +115,7 @@ class OGPManager {
             .then(response => {
                 gameState.ogpPoints = response.data.points;
                 DOM.ogpPointsDisplay.textContent = gameState.ogpPoints;
-                console.log('Total OGP points:', gameState.ogpPoints);
+                console.log('Total OGP points:', response, gameState.ogpPoints);
                 return gameState.ogpPoints;
             })
             .catch(error => {
