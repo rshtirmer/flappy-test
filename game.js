@@ -68,6 +68,7 @@ class OGPManager {
                     console.log('OGP SDK initialized successfully');
                     this.isInitialized = true;
                     this.setupListeners();
+                    this.updateTotalOgpPoints();
                 })
                 .catch(error => {
                     console.error('Failed to initialize OGP SDK:', error);
@@ -90,7 +91,7 @@ class OGPManager {
 
         this.ogp.on('SavePointsSuccess', () => {
             console.log('OGP points saved successfully');
-            this.ogpManager.updateTotalOgpPoints();
+            this.updateTotalOgpPoints();
         });
     }
 
