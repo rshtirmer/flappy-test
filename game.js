@@ -87,6 +87,11 @@ class OGPManager {
             console.log('OGP SDK is ready');
             DOM.startScreen.style.display = 'block';
         });
+
+        this.ogp.on('SavePointsSuccess', () => {
+            console.log('OGP points saved successfully');
+            this.ogpManager.updateTotalOgpPoints();
+        });
     }
 
     handleInitError() {
@@ -258,10 +263,6 @@ class FlappyBirdGame {
 
         if (gameState.score > 0) {
             this.ogpManager.saveScore(gameState.score)
-                .finally(() => {
-                    // Update points regardless of save result
-                    this.ogpManager.updateTotalOgpPoints();
-                });
         }
     }
 
