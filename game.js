@@ -101,8 +101,7 @@ class OGPManager {
     }
 
     addPoints(points) {
-        if (!this.isInitialized) return Promise.resolve();
-
+       console.log('Adding points:', points);
         this.ogp.addPoints(points);
     }                                                                                       
 
@@ -125,7 +124,7 @@ class OGPManager {
         return this.ogp.getPoints()
             .then(response => {
                 console.log('Total OGP points:', response);
-                gameState.ogpPoints = response;
+                gameState.ogpPoints = response.points;
                 DOM.ogpPointsDisplay.textContent = gameState.ogpPoints;
                 return gameState.ogpPoints;
             })
