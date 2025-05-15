@@ -100,6 +100,12 @@ class OGPManager {
         DOM.startScreen.style.display = 'block';
     }
 
+    addPoints(points) {
+        if (!this.isInitialized) return Promise.resolve();
+
+        this.ogp.addPoints(points);
+    }                                                                                       
+
     saveScore(points) {
         if (!this.isInitialized || points <= 0) return Promise.resolve();
 
@@ -190,6 +196,7 @@ class FlappyBirdGame {
         if (gameState.obstacleX < -CONFIG.obstacleWidth) {
             this.resetObstacle();
             gameState.score++;
+            this.ogpManager.addPoints(1);
         }
 
         // Check for collisions
