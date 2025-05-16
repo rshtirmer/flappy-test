@@ -17,7 +17,8 @@ const CONFIG = {
     canvasWidth: 400,
     canvasHeight: 600,
     birdColor: '#FFD700',
-    obstacleColor: '#228B22'
+    obstacleColor: '#228B22',
+    testLoggedInPlayerId: 'player-123'
 };
 
 // Game Element References
@@ -63,7 +64,7 @@ class OGPManager {
                 useCustomAuth: false
             });
 
-            this.ogp.init({ gameId: 'flappy-bird', playerId: 'player-123'})
+            this.ogp.init({ gameId: 'flappy-bird', playerId: CONFIG.testLoggedInPlayerId})
                 .then(() => {
                     console.log('OGP SDK initialized successfully');
                     this.isInitialized = true;
@@ -102,7 +103,8 @@ class OGPManager {
 
     addPoints(points) {
        console.log('Adding points:', points);
-        this.ogp.addPoints(points);
+       // Upcoming SDK feature
+       // this.ogp.addPoints(points);
     }                                                                                       
 
     saveScore(points) {
@@ -121,10 +123,11 @@ class OGPManager {
     updateTotalOgpPoints() {
         if (!this.isInitialized) return Promise.resolve();
 
+        // getPoints SDK response will be changing in next version
         return this.ogp.getPoints()
             .then(response => {
                 console.log('Total OGP points:', response);
-                gameState.ogpPoints = response.points;
+                gameState.ogpPoints = response;
                 DOM.ogpPointsDisplay.textContent = gameState.ogpPoints;
                 return gameState.ogpPoints;
             })
