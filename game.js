@@ -59,7 +59,7 @@ class OGPManager {
             console.log('Initializing OGP SDK...');
             this.ogp = new OpenGameSDK();
 
-            this.ogp.init({ gameId: 'flappy-bird', playerId: CONFIG.testLoggedInPlayerId})
+            this.ogp.init({ gameId: 'cd260b8d-40a1-4285-83dd-1feee97f1328', playerId: CONFIG.testLoggedInPlayerId})
                 .then(() => {
                     console.log('OGP SDK initialized successfully');
                     this.isInitialized = true;
