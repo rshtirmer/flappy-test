@@ -57,12 +57,7 @@ class OGPManager {
     initialize() {
         try {
             console.log('Initializing OGP SDK...');
-            this.ogp = new OpenGameSDK({
-                ui: {
-                    gameIcon: 'https://dpid.github.io/flappy-test/icon.png'
-                },
-                useCustomAuth: false
-            });
+            this.ogp = new OpenGameSDK();
 
             this.ogp.init({ gameId: 'flappy-bird', playerId: CONFIG.testLoggedInPlayerId})
                 .then(() => {
