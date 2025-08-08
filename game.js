@@ -4,6 +4,8 @@
 
 // Game Configuration
 const CONFIG = {
+    gameId: 'c8d75cec-d66f-46df-b0eb-e2065e7ccea3',
+    testLoggedInPlayerId: '',
     gravity: 0.05,
     jumpStrength: 3,
     maxVelocity: 5,
@@ -18,7 +20,6 @@ const CONFIG = {
     canvasHeight: 600,
     birdColor: '#FFD700',
     obstacleColor: '#228B22',
-    testLoggedInPlayerId: 'player-123'
 };
 
 // Game Element References
@@ -59,7 +60,7 @@ class OGPManager {
             console.log('Initializing OGP SDK...');
             this.ogp = new OpenGameSDK();
 
-            this.ogp.init({ gameId: 'cd260b8d-40a1-4285-83dd-1feee97f1328', playerId: CONFIG.testLoggedInPlayerId})
+            this.ogp.init({ gameId: CONFIG.gameId, playerId: CONFIG.testLoggedInPlayerId})
                 .then(() => {
                     console.log('OGP SDK initialized successfully');
                     this.isInitialized = true;
