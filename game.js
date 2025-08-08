@@ -58,7 +58,11 @@ class OGPManager {
     initialize() {
         try {
             console.log('Initializing OGP SDK...');
-            this.ogp = new OpenGameSDK();
+            this.ogp = new OpenGameSDK({
+                ui: {
+                  usePointsWidget: true,
+                }
+              });
 
             this.ogp.init({ gameId: CONFIG.gameId, playerId: CONFIG.testLoggedInPlayerId})
                 .then(() => {
