@@ -128,7 +128,6 @@ class OGPManager {
             .then(response => {
                 console.log('Total OGP points:', response);
                 gameState.ogpPoints = response;
-                DOM.ogpPointsDisplay.textContent = gameState.ogpPoints;
                 return gameState.ogpPoints;
             })
             .catch(error => {
