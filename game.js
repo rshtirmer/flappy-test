@@ -29,7 +29,7 @@ const DOM = {
     gameOverScreen: document.getElementById('gameOverScreen'),
     startButton: document.getElementById('startButton'),
     playAgainButton: document.getElementById('playAgainButton'),
-    finalScore: document.getElementById('finalScore'),
+    roundScore: document.getElementById('finalScore'),
     ogpPointsDisplay: document.getElementById('ogpPoints')
 };
 
@@ -241,8 +241,7 @@ class FlappyBirdGame {
             gameState.animationFrameId = null;
         }
 
-        DOM.finalScore.textContent = gameState.score;
-        DOM.ogpPointsDisplay.textContent = gameState.ogpPoints;
+        DOM.roundScore.textContent = gameState.score;
         DOM.gameOverScreen.style.display = 'block';
 
         if (gameState.score > 0) {
