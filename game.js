@@ -7,7 +7,7 @@ const CONFIG = {
     gameId: 'c8d75cec-d66f-46df-b0eb-e2065e7ccea3',
     testLoggedInPlayerId: '',
     gravity: 0.05,
-    jumpStrength: 3,
+    flapStrength: 3,
     maxVelocity: 5,
     birdInitialY: 300,
     birdWidth: 30,
@@ -20,6 +20,7 @@ const CONFIG = {
     canvasHeight: 600,
     birdColor: '#FFD700',
     obstacleColor: '#228B22',
+    animationFrameInterval: 10,
 };
 
 // Game Element References
@@ -43,7 +44,9 @@ const gameState = {
     score: 0,
     ogpPoints: 0,
     gameRunning: false,
-    animationFrameId: null
+    animationFrameId: null,
+    animationFrame: 0,
+    animationCounter: 0
 };
 
 // OGP Integration
@@ -122,16 +125,16 @@ class FlappyBirdGame {
     setupEventListeners() {
         DOM.startButton.addEventListener('click', () => this.startGame());
         DOM.playAgainButton.addEventListener('click', () => this.startGame());
-        DOM.canvas.addEventListener('click', () => this.jump());
+        DOM.canvas.addEventListener('click', () => this.flap());
         DOM.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            this.jump();
+            this.flap();
         });
         
         // Add keyboard support
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
-                this.jump();
+                this.flap();
             }
         });
     }
@@ -145,6 +148,8 @@ class FlappyBirdGame {
         gameState.obstacleX = CONFIG.canvasWidth;
         gameState.score = 0;
         gameState.gameRunning = true;
+        gameState.animationFrame = 0;
+        gameState.animationCounter = 0;
         
         this.resetObstacle();
         this.gameLoop();
@@ -160,22 +165,40 @@ class FlappyBirdGame {
     }
 
     update() {
-        // Update bird position
+        this.updateBirdPosition();
+        this.updateObstaclePosition();
+        this.updateObstaclePassed();
+        this.updateAnimation();
+        this.checkCollisions();
+    }
+
+    updateBirdPosition() {
         gameState.birdVelocity = Math.min(gameState.birdVelocity + CONFIG.gravity, CONFIG.maxVelocity);
         gameState.birdY += gameState.birdVelocity;
+    }
 
-        // Update obstacle position
+    updateObstaclePosition() {
         gameState.obstacleX -= CONFIG.obstacleSpeed;
-        
-        // Check if obstacle passed
+    }
+
+    updateObstaclePassed() {
         if (gameState.obstacleX < -CONFIG.obstacleWidth) {
             this.resetObstacle();
             gameState.score++;
             this.ogpManager.addPoints(1);
         }
+    }
 
-        // Check for collisions
-        this.checkCollisions();
+    updateAnimation() {
+        gameState.animationCounter++;
+        if (gameState.animationCounter >= CONFIG.animationFrameInterval) { // Change frame every 10 updates
+            this.updateAnimationFrame();
+        }
+    }
+
+    updateAnimationFrame() {
+        gameState.animationFrame = gameState.animationFrame === 0 ? 1 : 0;
+        gameState.animationCounter = 0;
     }
 
     render() {
@@ -184,9 +207,40 @@ class FlappyBirdGame {
         // Clear canvas
         ctx.clearRect(0, 0, CONFIG.canvasWidth, CONFIG.canvasHeight);
 
-        // Draw bird
+        // Draw bird with animation
+        // Base yellow body (static)
         ctx.fillStyle = CONFIG.birdColor;
         ctx.fillRect(CONFIG.birdX, gameState.birdY, CONFIG.birdWidth, CONFIG.birdHeight);
+        
+        // White wing that rotates
+        ctx.fillStyle = 'white';
+        const wingWidth = CONFIG.birdWidth * 0.66;
+        const wingHeight = CONFIG.birdHeight * 0.33;
+        const wingX = CONFIG.birdX + CONFIG.birdWidth - wingWidth * 1.75; // Position wing on right side
+        const wingY = gameState.birdY + CONFIG.birdHeight / 2 - wingHeight / 2; // Center wing vertically
+        
+        // Save context for rotation
+        ctx.save();
+        
+        // Set rotation origin to the right side of the wing, centered vertically
+        const rotationX = wingX + wingWidth;
+        const rotationY = wingY + wingHeight / 2;
+        
+        ctx.translate(rotationX, rotationY);
+        
+        if (gameState.animationFrame === 0) {
+            // Frame 1: Wing at rest (0 degrees)
+            ctx.rotate(0);
+        } else {
+            // Frame 2: Wing rotated up (15 degrees)
+            ctx.rotate(-0.26); // -15 degrees in radians
+        }
+        
+        // Draw the wing
+        ctx.fillRect(-wingWidth, -wingHeight / 2, wingWidth, wingHeight);
+        
+        // Restore context
+        ctx.restore();
 
         // Draw obstacles
         ctx.fillStyle = CONFIG.obstacleColor;
@@ -247,9 +301,10 @@ class FlappyBirdGame {
         }
     }
 
-    jump() {
+    flap() {
         if (gameState.gameRunning) {
-            gameState.birdVelocity = -CONFIG.jumpStrength;
+            gameState.birdVelocity = -CONFIG.flapStrength;
+            this.updateAnimationFrame();
         }
     }
 }
