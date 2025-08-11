@@ -69,14 +69,12 @@ class OGPManager {
                     console.log('OGP SDK initialized successfully');
                     this.isInitialized = true;
                     this.setupListeners();
-                    this.updateTotalOgpPoints();
                 })
                 .catch(error => {
                     console.error('Failed to initialize OGP SDK:', error);
                     this.handleInitError();
                 });
             
-            // Call gameReadyToPlay outside the init chain
             this.ogp.gameReadyToPlay();
         } catch (error) {
             console.error('Error initializing OGP:', error);
@@ -89,22 +87,15 @@ class OGPManager {
             console.log('OGP SDK is ready');
             DOM.startScreen.style.display = 'block';
         });
-
-        this.ogp.on('SavePointsSuccess', () => {
-            console.log('OGP points saved successfully');
-            this.updateTotalOgpPoints();
-        });
     }
 
     handleInitError() {
-        // Fallback to allow game to run without OGP
         DOM.startScreen.style.display = 'block';
     }
 
     addPoints(points) {
        console.log('Adding points:', points);
-       // Upcoming SDK feature
-       // this.ogp.addPoints(points);
+       this.ogp.ui.addPoints(points);
     }                                                                                       
 
     saveScore(points) {
@@ -116,22 +107,6 @@ class OGPManager {
             })
             .catch(error => {
                 console.error('Failed to save points:', error);
-                return Promise.reject(error);
-            });
-    }
-
-    updateTotalOgpPoints() {
-        if (!this.isInitialized) return Promise.resolve();
-
-        // getPoints SDK response will be changing in next version
-        return this.ogp.getPoints()
-            .then(response => {
-                console.log('Total OGP points:', response);
-                gameState.ogpPoints = response;
-                return gameState.ogpPoints;
-            })
-            .catch(error => {
-                console.error('Failed to get total OGP points:', error);
                 return Promise.reject(error);
             });
     }
