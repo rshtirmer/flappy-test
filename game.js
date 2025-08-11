@@ -29,8 +29,7 @@ const DOM = {
     gameOverScreen: document.getElementById('gameOverScreen'),
     startButton: document.getElementById('startButton'),
     playAgainButton: document.getElementById('playAgainButton'),
-    roundScore: document.getElementById('finalScore'),
-    ogpPointsDisplay: document.getElementById('ogpPoints')
+    roundScore: document.getElementById('roundScore'),
 };
 
 // Game State
@@ -203,7 +202,6 @@ class FlappyBirdGame {
         ctx.fillStyle = 'white';
         ctx.font = '24px Arial';
         ctx.textAlign = 'left';
-        ctx.fillText(`Score: ${gameState.score}`, 10, 30);
     }
 
     checkCollisions() {
