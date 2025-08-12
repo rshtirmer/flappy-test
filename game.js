@@ -222,7 +222,15 @@ class FlappyBirdGame {
     }
 
     updateAnimationFrame() {
-        gameState.animationFrame = gameState.animationFrame === 0 ? 1 : 0;
+        // Only flap wings when bird is not angled downward (gliding)
+        // When bird is angled downward (positive rotation), keep wings straight
+        if (gameState.birdRotation > 0) {
+            // Bird is angled downward - keep wings in gliding position (frame 0)
+            gameState.animationFrame = 0;
+        } else {
+            // Bird is level or angled upward - normal wing flapping
+            gameState.animationFrame = gameState.animationFrame === 0 ? 1 : 0;
+        }
         gameState.animationCounter = 0;
     }
 
