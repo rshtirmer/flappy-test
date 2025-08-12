@@ -19,8 +19,13 @@ const CONFIG = {
     canvasWidth: 400,
     canvasHeight: 600,
     birdColor: '#FFD700',
+    beakColor: '#FF8C00',
+    wingColor: 'white',
     obstacleColor: '#228B22',
     animationFrameInterval: 10,
+    rotationFriction: 0.4,
+    rotationSensitivity: 0.3,
+    maxRotation: Math.PI / 4,
 };
 
 // Game Element References
@@ -38,6 +43,8 @@ const gameState = {
     ctx: DOM.canvas.getContext('2d'),
     birdY: CONFIG.birdInitialY,
     birdVelocity: 0,
+    birdRotation: 0, // Current rotation angle
+    birdRotationVelocity: 0, // Rate of rotation change
     obstacleX: CONFIG.canvasWidth,
     gap: CONFIG.gapSize,
     obstacleHeight: 0,
@@ -145,6 +152,8 @@ class FlappyBirdGame {
         
         gameState.birdY = CONFIG.birdInitialY;
         gameState.birdVelocity = 0;
+        gameState.birdRotation = 0;
+        gameState.birdRotationVelocity = 0;
         gameState.obstacleX = CONFIG.canvasWidth;
         gameState.score = 0;
         gameState.gameRunning = true;
@@ -166,6 +175,7 @@ class FlappyBirdGame {
 
     update() {
         this.updateBirdPosition();
+        this.updateBirdRotation();
         this.updateObstaclePosition();
         this.updateObstaclePassed();
         this.updateAnimation();
@@ -175,6 +185,21 @@ class FlappyBirdGame {
     updateBirdPosition() {
         gameState.birdVelocity = Math.min(gameState.birdVelocity + CONFIG.gravity, CONFIG.maxVelocity);
         gameState.birdY += gameState.birdVelocity;
+    }
+
+    updateBirdRotation() {
+        // Calculate target rotation based on velocity
+        const targetRotation = Math.max(-CONFIG.maxRotation, Math.min(CONFIG.maxRotation, gameState.birdVelocity * CONFIG.rotationSensitivity));
+        
+        // Calculate rotation velocity towards target
+        const rotationDifference = targetRotation - gameState.birdRotation;
+        gameState.birdRotationVelocity += rotationDifference * 0.1; // Spring force towards target
+        
+        // Apply friction to rotation velocity
+        gameState.birdRotationVelocity *= CONFIG.rotationFriction;
+        
+        // Update rotation
+        gameState.birdRotation += gameState.birdRotationVelocity;
     }
 
     updateObstaclePosition() {
@@ -207,26 +232,45 @@ class FlappyBirdGame {
         // Clear canvas
         ctx.clearRect(0, 0, CONFIG.canvasWidth, CONFIG.canvasHeight);
 
-        // Draw bird with animation
-        // Base yellow body (static)
-        ctx.fillStyle = CONFIG.birdColor;
-        ctx.fillRect(CONFIG.birdX, gameState.birdY, CONFIG.birdWidth, CONFIG.birdHeight);
+        // Use smooth rotation from physics simulation
+        const rotationAngle = gameState.birdRotation;
         
-        // White wing that rotates
-        ctx.fillStyle = 'white';
+        // Bird center coordinates
+        const birdCenterX = CONFIG.birdX + CONFIG.birdWidth / 2;
+        const birdCenterY = gameState.birdY + CONFIG.birdHeight / 2;
+        
+        // Save context for bird rotation
+        ctx.save();
+        ctx.translate(birdCenterX, birdCenterY);
+        ctx.rotate(rotationAngle);
+        
+        // Draw bird body (rotated)
+        ctx.fillStyle = CONFIG.birdColor;
+        ctx.fillRect(-CONFIG.birdWidth / 2, -CONFIG.birdHeight / 2, CONFIG.birdWidth, CONFIG.birdHeight);
+        
+        // Draw orange beak (rotated with bird)
+        ctx.fillStyle = CONFIG.beakColor;
+        const beakWidth = CONFIG.birdWidth * 0.2; 
+        const beakHeight = CONFIG.birdHeight * 0.33;
+        const beakX = CONFIG.birdWidth / 2; // Position at right edge of bird body
+        const beakY = -beakHeight / 2; // Center beak vertically
+        ctx.fillRect(beakX, beakY, beakWidth, beakHeight);
+        
+        // Draw wing (rotated with bird)
+        ctx.fillStyle = CONFIG.wingColor;
         const wingWidth = CONFIG.birdWidth * 0.66;
         const wingHeight = CONFIG.birdHeight * 0.33;
-        const wingX = CONFIG.birdX + CONFIG.birdWidth - wingWidth * 1.75; // Position wing on right side
-        const wingY = gameState.birdY + CONFIG.birdHeight / 2 - wingHeight / 2; // Center wing vertically
+        const wingX = CONFIG.birdWidth / 2 - wingWidth * 1.75; // Position wing on right side relative to center
+        const wingY = -wingHeight / 2; // Center wing vertically relative to center
         
-        // Save context for rotation
+        // Save context for wing animation
         ctx.save();
         
         // Set rotation origin to the right side of the wing, centered vertically
-        const rotationX = wingX + wingWidth;
-        const rotationY = wingY + wingHeight / 2;
+        const wingRotationX = wingX + wingWidth;
+        const wingRotationY = wingY + wingHeight / 2;
         
-        ctx.translate(rotationX, rotationY);
+        ctx.translate(wingRotationX, wingRotationY);
         
         if (gameState.animationFrame === 0) {
             // Frame 1: Wing at rest (0 degrees)
@@ -239,7 +283,10 @@ class FlappyBirdGame {
         // Draw the wing
         ctx.fillRect(-wingWidth, -wingHeight / 2, wingWidth, wingHeight);
         
-        // Restore context
+        // Restore wing context
+        ctx.restore();
+        
+        // Restore bird context
         ctx.restore();
 
         // Draw obstacles
