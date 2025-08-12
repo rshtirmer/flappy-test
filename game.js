@@ -227,6 +227,11 @@ class FlappyBirdGame {
     }
 
     render() {
+        this.drawBird();
+        this.drawObstacle();    
+    }
+
+    drawBird() {
         const { ctx } = gameState;
         
         // Clear canvas
@@ -288,8 +293,10 @@ class FlappyBirdGame {
         
         // Restore bird context
         ctx.restore();
+    }
 
-        // Draw obstacles
+    drawObstacle() {
+        const { ctx } = gameState;
         ctx.fillStyle = CONFIG.obstacleColor;
         ctx.fillRect(gameState.obstacleX, 0, CONFIG.obstacleWidth, gameState.obstacleHeight);
         ctx.fillRect(
@@ -298,11 +305,6 @@ class FlappyBirdGame {
             CONFIG.obstacleWidth, 
             CONFIG.canvasHeight - gameState.obstacleHeight - gameState.gap
         );
-
-        // Draw score
-        ctx.fillStyle = 'white';
-        ctx.font = '24px Arial';
-        ctx.textAlign = 'left';
     }
 
     checkCollisions() {
