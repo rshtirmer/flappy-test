@@ -4,7 +4,7 @@
 
 // Game Configuration
 const CONFIG = {
-    gameId: 'c8d75cec-d66f-46df-b0eb-e2065e7ccea3',
+    gameId: '08a17f31-977f-4404-aa47-32d986e66419',
     testLoggedInPlayerId: '',
     gravity: 0.05,
     flapStrength: 3,
